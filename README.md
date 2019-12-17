@@ -5,8 +5,9 @@
 - [Intro](#intro) <br/>
 - [Find IP Address](#ip) <br/>
 - [AWK command](#awk) <br/>
-- [Find IP Address](#ip) <br/>
-- [Find IP Address](#ip) <br/>
+- [Copy/Paste](#cp) <br/>
+- [Find File](#find) <br/>
+
 - [Find IP Address](#ip) <br/>
 
 
@@ -61,4 +62,57 @@ $ awk 'BEGIN { OFS="|" ; ORS="\n-----------------\n"; print "Table"}
 ```
 
 [TOP](#content)
+
+### cp
+
+```console
+$ apt-get install xclip
+```
+
+Use command
+
+```console
+# to copy
+$  echo foo | xclip -selection c
+# to paste
+$  echo foo | xclip -selection c -o
+```
+
+OR create aliases:
+
+In ~/.bash_aliases, add:
+
+alias copy="xclip -selection c" <br/>
+alias paste="xclip -selection c -o"
+
+```console
+$ cd ~
+# if the file does not exists create a new one
+$ touch .bash_aliases
+$ echo 'alias copy="xclip -selection c"' >> .bash_aliases
+$ echo 'alias paste="xclip -selection c -o"' >> .bash_aliases
+# check all aliases
+$ alias
+
+$ echo foo | copy
+$ paste
+```
+
+[TOP](#content)
+
+### find
+
+```console
+# Find all files that are .err in specific folder 
+$ find /home/username/ -name "*.err"
+# in current directory
+$ find -name "*.err"
+# Find files that are changed in the last 7 days (change the number to increase/decrease the number of days)
+$ find / -name "\*.txt" -mtime -7
+$ find -name "*.txt" -mtime -7
+```
+
+[TOP](#content)
+
+
 
