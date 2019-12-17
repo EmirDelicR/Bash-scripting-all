@@ -1,4 +1,4 @@
-### SOME TERMINAL COMMANDS - MOST USED
+## SOME TERMINAL COMMANDS - MOST USED
 
 #### content
 
@@ -9,14 +9,14 @@
 - [Find File](#find) <br/>
 - [Create/Delete File/Directory](#edit) <br/>
 - [Change permissions and user for directory/file](#permission) <br/>
+- [Write in File](#write) <br/>
+- [Command grep](#grep)<br/>
+- [File difference](#diff)<br/>
 
-- [Django with REST](#django)
+- [Bash Scripting](#bash)
   - [URLs](#urls)
   - [Create view](#view)
   
-- [Client setup](#client)
-- [Links](#links)
-
 ### intro
 
 HINT 
@@ -137,7 +137,7 @@ $ rm file_name.ext
 
 ### permission
 
-[Dock](https://www.linode.com/docs/tools-reference/tools/modify-file-permissions-with-chmod/)
+[Documentation](https://www.linode.com/docs/tools-reference/tools/modify-file-permissions-with-chmod/)
 
 ```console
 # change file or folder user ( $USER:$GROUP => ed:ed, -R - do it recursively to all files inside)
@@ -179,9 +179,133 @@ $ chmod 700 file.ext
 
 [TOP](#content)
 
+### write
 
+Adding text using **echo >** write to file and overwrite, **>>** append text to file
 
+```console
+# write
+$ echo 'Some text to write to file' >> file.ext
+# read
+$ cat file.txt
+```
+
+Read the content of the file and save to another file
+This will find in the current directory all files and then will execute grep command
+that will read file content and search lines with test and copy that to clipboard
+the copy command is set in [Copy/Paste](#cp) part
+
+```console
+$ find . -type f -exec grep "test" '{}' \; | copy
+
+# Past to other file in one line
+$ echo $(paste) >> file.ext
+
+# OR in same line order
+$ paste >> file.ext
+
+TASK: read content of test.txt | convert to base64 | copy that | and append to file test_sudo.txt
+$ cat test.txt | base64 | copy | paste >> test_sudo.txt
+
+# Read using sed command
+
+# Read lines from test.txt that only have errors in
+$ sed -n '/errors/p' test.txt
+
+# Read only lines that does not contain specific word (errors)
+$ sed '/errors/d' test.txt
+
+# Use regex ^ - starts with .* - can have anything between \$ - end with (add char in front)
+# '/^er.*s\$/ - starts with e, followed by r, then can be anything between and finish with s
+$ sed -n '/^er.*s\$/p' test.txt
+
+# Replace words 
+$ sed 's/errors/err/g' test.txt
+# you can also chain | copy and in new line execute paste > file.ext to save new replaced content
+$ sed 's/errors/err/g' test.txt | copy
+$ paste > test.txt
+
+# Prepends something to lines in file => chain | copy and in new line execute paste > file.ext to save
+$ sed 's/^/something /' file.ext
+
+# Append to end
+$ sed 's/\$/something/'
+
+```
+
+[TOP](#content)
+
+### grep
+
+```console
+# -o - show only matching pattern -w mach exactly the word that is passed
+$ cat test.txt | grep -o -w 'dsada'
+
+# Search more then one word
+$ cat test.txt | egrep -o -w 'dsada|test'
+```
+
+[TOP](#content)
+
+### diff
+
+Check difference between two files
+
+```console
+$ diff file.ext file2.ext
+$ diff file.ext file2.ext | grep "<" | awk '{$1= ""; print NR,$0 }'
+```
 
 [TOP](#content)
 
 
+## BASH SCRIPTING
+
+### bash
+
+Create a simple bash script
+
+- bash script are with extension **.sh**
+- must start with **#!/bin/bash**
+- run with **bash name.sh** or with **./name.sh** (the second one depends on permissions)
+
+```console
+$ touch test.sh
+# copy lines below
+# paste is command from part [Copy/Paste](#cp)
+$ paste >> test.sh
+
+# run command
+$ bash test.sh
+
+# Execute in debug mode
+$ bash -x test.sh
+
+# to execute terminal command in bash script use "$(command)" like "$(ls)"
+```
+
+```text
+#!/bin/bash
+
+clear
+echo "####### This is information provided by mysystem.sh #######"
+printf "Program starts now. \n\n"
+printf "Hello, $USER \n\n"
+printf "Today's date is `date`, this is week `date +"%V"`. \n\n"
+echo "These users are currently connected:"
+w | cut -d " " -f 1 - | grep -v USER | sort -u
+echo ""
+printf "This is `uname -s` running on a `uname -m` processor. \n\n"
+echo "This is the uptime information:"
+uptime
+echo ""
+printf "############## That's all folks! ############## \n"
+```
+
+[TOP](#content)
+
+
+
+
+
+[TOP](#content)
