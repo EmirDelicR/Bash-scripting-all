@@ -22,6 +22,8 @@
   - [Script in script execution](#scripts)
   - [Ask user for input](#input)
   - [Chron Job](#chron)
+  - [Functions](#function)
+  - [Variables](#var)
   
 ### intro
 
@@ -680,30 +682,189 @@ crontab documentation
     ------------- Minute (0 - 59)
 ```
 ```console
-# create an file that will be chron job
-$ touch mycrone
+# First create a bash file that will be executed by chron job
+$ touch cron_script.sh
+
+# create an file that will be cron job
+$ touch cron_job
 
 # This will create an cron job to execute every minute (change with 0 0 1 * * to execute every first in month)
-$ echo "* * * * * $(pwd)/test.sh" > mycrone
+$ echo "* * * * * $(pwd)/cron_script.sh" > cron_job
 
-# create an chron job from specific file
-$ crontab mycrone
+# create an cron job from specific file
+$ crontab cron_job
 
-# list all chron jobs
+# list all cron jobs
 $ crontab -l
     
 # to remove crontab
 $ crontab -r
 ```
 
+```text
+#!/bin/bash
+# This script creates a subdirectory in the current directory, to which old
+# files are moved.
+# file name: cron_script.sh
+
+# create date in format 20191212
+DIRNAMEEXT=`date +%Y%m%d`
+
+# create like $PWD for this current file if this is called from some other place
+DIRECTORY="$(dirname "$0")"
+
+DESTDIRPATH="$DIRECTORY/archive-$DIRNAMEEXT"
+# This create directory
+mkdir "$DESTDIRPATH"
+
+while read file; do
+  echo "File: $file"
+  gzip "$file"
+  mv "$file".gz "$DESTDIRPATH"
+  echo "$file archived"
+done < <(find "$PWD" -type f)
+
+# This line is piping result from find to while function
+# find in current directory ($PWD) all files (-type f) and data was last modified n*24 hours ago (-mtime +5)
+# done < <(find "$PWD" -type f -mtime +5)
+```
+
 [TOP](#content)
 
+### function
 
+```text
+#!/bin/bash
+# This script show how to work with functions
+# file name: function.sh
 
+list_length () {
+  echo "~~~~~ 1 ~~~~~~~"
+  echo "$1"
+  echo "~~~~~ 2 ~~~~~~~"
+  echo "$2"
+  echo "~~~~~ 3 ~~~~~~~"
+  echo "$3"
+  echo "~~~~~ 4 ~~~~~~~"
+  echo "$4"
+  echo "***** All ******"
+  #	All arguments as separate words
+  echo "$@"
+  echo "***** Args num ******"
+  # Number of arguments
+  echo "$#"
+}
 
+LISTA="$(ls)"
+list_length "var_1" "var_2" "var_3" "var_4" "$LISTA"
+```
+
+```text
+#!/bin/bash
+# This script count length of files and add user to pick option
+# file name: function_list_pick_file.sh
+
+list_length () {
+  local length_result=$(wc -w <<< "$@")
+  # Shorter
+  # echo "$#"
+  echo "$length_result"
+}
+
+LISTA="$(ls)"
+
+OPTIONS="$(list_length "$LISTA")"
+
+select FILENAME in *; do
+  if [[ $REPLY -gt $OPTIONS ]]; then
+    echo "Do not be an plonker!"
+    exit 1
+  elif [[ $REPLY == "E" ]]; then
+    echo "By :)"
+    exit 1
+  fi
+  echo "You picked $FILENAME ($REPLY). To exit input E"
+done
+
+```
 
 [TOP](#content)
 
+### var
+
+```text
+#!/bin/bash
+# This script show how to work with arraya and strings
+# file name: var.sh
+
+# Array
+
+ARRAY=(1 2 3 4)
+
+echo "Output: $ARRAY"
+# Output: 1
+
+echo "Output: ${ARRAY[*]}"
+# Output: 1 2 3 4
+
+echo "Output: $ARRAY[*]"
+# Output: 1[*]
+
+echo "Output: ${ARRAY[2]}"
+# Output: 3
+
+ARRAY[4]=5
+echo "Output: ${ARRAY[*]}"
+# Output: 1 2 3 4 5
+
+unset ARRAY[1]
+# 2 3 4 5
+
+unset ARRAY
+# no output
+
+# Strings
+
+WORD="this is some word"
+echo "$WORD"
+# this is some word
+
+echo "${WORD:1}"
+# his is some word
+
+echo "${WORD:8:4}"
+# some
+
+# Deleting from string / array
+
+ARRAY=(one two one three one four)
+# { } Expand elements in list
+echo "${ARRAY[*]}"
+# one two one three one four
+
+echo "${ARRAY[*]#one}"
+# two three four
+
+echo "${ARRAY[*]#t}"
+# one wo one hree one four
+
+echo "${ARRAY[*]#t*}"
+# one wo one hree one four
+
+echo "${ARRAY[*]##t*}"
+# one one one four
+
+echo "${WORD%rd}"
+# this is some wo (this only work if removing last part of string)
+
+# ${VAR/PATTERN/STRING}
+echo "${WORD/o/?}"
+# this is s?me word
+
+# ${VAR//PATTERN/STRING} - replace all matches
+echo "${WORD//o/?}"
+# this is s?me w?rd
+```
 
 [TOP](#content)
 
