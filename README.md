@@ -7,9 +7,8 @@
 - [AWK command](#awk) <br/>
 - [Copy/Paste](#cp) <br/>
 - [Find File](#find) <br/>
-
-- [Find IP Address](#ip) <br/>
-
+- [Create/Delete File/Directory](#edit) <br/>
+- [Change permissions and user for directory/file](#permission) <br/>
 
 - [Django with REST](#django)
   - [URLs](#urls)
@@ -114,5 +113,75 @@ $ find -name "*.txt" -mtime -7
 
 [TOP](#content)
 
+### edit
+
+```console
+# Make directory
+$ mkdir directory_name
+
+# Sudo command make directory as root user
+$ sudo mkdir directory_name
+
+# Delete directory
+$ rm -r directory_name
+
+# Create file
+$ touch file_name.ext
+
+# Delete file
+$ rm file_name.ext
+```
+
+
+[TOP](#content)
+
+### permission
+
+[Dock](https://www.linode.com/docs/tools-reference/tools/modify-file-permissions-with-chmod/)
+
+```console
+# change file or folder user ( $USER:$GROUP => ed:ed, -R - do it recursively to all files inside)
+$ sudo chown -R $USER:$GROUP file.ext
+$ sudo chown -R $USER:$GROUP directory
+
+# change mode for file directory
+$ chmod 700 file.ext
+$ chmod 700 directory
+
+$ ls -la
+# This is output example
+# -rw-rw-r--   ed ed  
+# drwxrwxr-x   ed ed
+
+```
+
+| File type    | User  | Group  | Global |
+| -------------|:-----:|:------:| ------:|
+| d Directory  | rwx   | r-x    | rwx    |
+| - Reg file   | rw-   | rwx    | rwx    |
+| l Symb Link  | -w-   | rwx    | rwx    |
+
+```console
+$ chmod 700 file.ext
+# User = 7, Group = 0, Global = 0
+```
+
+| Octal | permission | 
+| ------|-----------:|
+| 0     | ---        |
+| 1     | --x        |
+| 2     | -w-        |
+| 3     | -wx        |
+| 4     | r--        |
+| 5     | r-x        |
+| 6     | rw-        |
+| 7     | rwx        |
+
+[TOP](#content)
+
+
+
+
+[TOP](#content)
 
 
