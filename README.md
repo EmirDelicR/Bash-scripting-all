@@ -25,6 +25,9 @@
   - [Functions](#function)
   - [Variables](#var)
   
+ - [Some my useful scripts](#myscripts)
+ 
+  
 ### intro
 
 HINT 
@@ -771,19 +774,25 @@ list_length () {
   echo "$length_result"
 }
 
+isInteger () {
+  test "$1" -ge 0 2>/dev/null
+  [ $? -eq 2 ] && echo -e "Please provide an number not an string '$1'!" && exit 1
+}
+
 LISTA="$(ls)"
 
 OPTIONS="$(list_length "$LISTA")"
 
 select FILENAME in *; do
+  isInteger $REPLY
   if [[ $REPLY -gt $OPTIONS ]]; then
     echo "Do not be an plonker!"
     exit 1
-  elif [[ $REPLY == "E" ]]; then
+  elif [[ $REPLY -eq 0 ]]; then
     echo "By :)"
     exit 1
   fi
-  echo "You picked $FILENAME ($REPLY). To exit input E"
+  echo "You picked $FILENAME ($REPLY). To exit input 0"
 done
 
 ```
@@ -868,4 +877,139 @@ echo "${WORD//o/?}"
 
 [TOP](#content)
 
+### myscripts
+
+```text
+#!/bin/bash
+# This script converts all file names containing upper case characters into file# names containing only lower cases.
+
+LIST="$(ls)"
+for name in "$LIST"; do
+  if [[ "$name" != _[[:upper:]]_ ]]; then
+    continue
+  fi
+
+  ORIG="$name"
+  NEW=`echo $name | tr 'A-Z' 'a-z'`
+  mv "$ORIG" "$NEW"
+  echo "new name for $ORIG is $NEW"
+done
+```
+
+```text
+#!/bin/bash
+# This script read an file set header split text for 50 lines and create an individual files
+# attributes: file to read from, number of lines to split
+
+GREEN="\033[0;32m"
+CYAN="\033[0;36m"
+RED="\033[0;31m"
+NC="\033[0m" # No Color
+
+echo -e "${GREEN}#########################################################################"
+echo -e "${GREEN}# ${CYAN}Use this function to split one file into multiple files.              ${GREEN}#"
+echo -e "${GREEN}# ${CYAN}It append the first line to every file like the header and            ${GREEN}#"
+echo -e "${GREEN}# ${CYAN}append rest split by line numbers that you can pass as an argument.   ${GREEN}#"
+echo -e "${GREEN}# ${CYAN}By default is set to 50 lines.                                        ${GREEN}#"
+echo -e "${GREEN}# ${CYAN}Script execution ex. function.sh file.ext 10                          ${GREEN}#"
+echo -e "${GREEN}#########################################################################${NC}"
+echo ""
+echo ""
+
+isInteger () {
+  test "$1" -ge 0 2>/dev/null
+  [ $? -eq 2 ] && echo -e "${RED}Please provide an number of lines not an string '$1'!${NC}" && exit 1
+}
+
+# check if file parameter is set
+[ -z "$1" ] && echo -e "${RED}Please provide a file name! For ex. 'scriptname.sh file_name.ext'${NC}" && exit 1
+
+FILE=$1
+
+# Check if file that is passed exist in folder
+[ ! -f "$FILE" ] && echo -e "${RED}This file does not exist!${NC}" && exit 1
+    
+isInteger $2
+
+SPLIT_NUM=$2
+
+# Check if other parameter is set, if not set to 49
+[ -z "$2" ] && SPLIT_NUM=49
+
+# Create an temporary file
+TMPFILE="test_tmp.txt"
+
+# Create file numbers
+FILE_NUM=0
+
+# Fetch header as two first lines
+header="$(head -n 2 "$FILE")"
+
+# Remove first two lines from file
+tail -n +3 "$FILE" > "$TMPFILE"
+
+# Add header to first file
+echo $header >> "split_$FILE_NUM.txt"
+
+# Add empty line
+echo " " >> "splited_$FILE_NUM.txt"
+
+# use to count lines
+start=0
+
+while IFS= read -r line; do
+  ((start++))
+  # Create and input lines to file
+  echo $line >> "split_$FILE_NUM.txt"
+  if [ $start -gt $SPLIT_NUM ]; then
+    ((FILE_NUM++))
+    start=0
+    echo $header >> "split_$FILE_NUM.txt"
+    # Add empty line
+    echo " " >> "split_$FILE_NUM.txt"
+  fi
+done < "$TMPFILE"
+
+# remove tmpfile
+rm $TMPFILE
+
+echo -e "${CYAN} $FILE_NUM was successfully created! Check in folder new files named split_n.txt. :) ${NC}"
+
+```
+
+```text
+#!/bin/bash
+# This function check the current terminal that is in use bxy user
+
+which_term() {
+  term=$(ps -p $(ps -p $$ -o ppid=) -o args=);
+  found=0;
+  case $term in
+    *gnome-terminal*)
+      found=1
+      echo "gnome-terminal " $(dpkg -l gnome-terminal | awk '/^ii/{print $3}')
+    ;;
+    *lxterminal*)
+      found=1
+      echo "lxterminal " $(dpkg -l lxterminal | awk '/^ii/{print $3}')
+    ;;
+    rxvt*)
+      found=1
+      echo "rxvt " $(dpkg -l rxvt | awk '/^ii/{print $3}')
+    ;;
+    ##  Try and guess for any others
+    *)
+      for v in '-version' '--version' '-V' '-v'; do
+        $term "$v" &>/dev/null && eval $term $v && found=1 && break
+      done
+    ;;
+  esac
+  ## If none of the version arguments worked, try and get the package version
+  [ $found -eq 0 ] && echo "$term " $(dpkg -l $term | awk '/^ii/{print $3}')
+}
+
+which_term
+```
+
+[TOP](#content)
 
