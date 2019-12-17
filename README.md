@@ -7,14 +7,16 @@
 - [AWK command](#awk) <br/>
 - [Copy/Paste](#cp) <br/>
 - [Find File](#find) <br/>
-- [Create/Delete File/Directory](#edit) <br/>
-- [Change permissions and user for directory/file](#permission) <br/>
-- [Write in File](#write) <br/>
-- [Command grep](#grep)<br/>
-- [File difference](#diff)<br/>
+- [Create/Delete File/Directory](#edit) 
+- [Change permissions and user for directory/file](#permission)
+- [Write in File](#write) 
+- [Command grep](#grep)
+- [File difference](#diff)
 
 - [Bash Scripting](#bash)
-  - [URLs](#urls)
+  - [Passing variables](#variables)
+  
+  
   - [Create view](#view)
   
 ### intro
@@ -286,6 +288,8 @@ $ bash -x test.sh
 
 ```text
 #!/bin/bash
+# This script shows basic info about user current time ...
+# check in scripts/info.sh
 
 clear
 echo "####### This is information provided by mysystem.sh #######"
@@ -304,7 +308,7 @@ printf "############## That's all folks! ############## \n"
 
 [TOP](#content)
 
-
+### variables
 
 
 
