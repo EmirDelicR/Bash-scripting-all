@@ -301,7 +301,7 @@ $ bash -x info.sh
 # to execute terminal command in bash script use "$(command)" like "$(ls)"
 ```
 
-```text
+```console
 #!/bin/bash
 # This script shows basic info about user current time ...
 # check in scripts/info.sh
@@ -335,7 +335,7 @@ $ paste >> variables.sh
 $ bash variables.sh var_one var_two $USER 
 ```
 
-```text
+```console
 #!/bin/bash
 # This script reads 3 positional parameters and prints them out.
 
@@ -407,7 +407,7 @@ if [[ ARG1 OP ARG2 ]] # "OP" is one of -eq, -ne, -lt, -le, -gt or -ge.
 
 Example:
 
-```text
+```console
 #!/bin/bash
 # Basic if statement
 # run: bash if_basic.sh 101
@@ -422,7 +422,7 @@ date
    
 Example 2:
 
-```text
+```console
 #!/bin/bash
 # This script gives information about a file.
 # run: bash if_file_info.sh if_basic.sh
@@ -443,7 +443,7 @@ fi
 
 ### case
 
-```text
+```console
 #!/bin/bash
 # Basic case statement
 # file name case.sh
@@ -469,7 +469,7 @@ case $variable in
 
 ### for
 
-```text
+```console
 #!/bin/bash
 # Basic for loop
 # file name for.sh
@@ -504,7 +504,7 @@ done
 
 ### while
 
-```text
+```console
 #!/bin/bash
 # This script just echo test 4 times.
 # file name while.sh
@@ -525,7 +525,7 @@ done
 
 Frst script:
 
-```text
+```console
 #!/bin/bash
 # This script returns exit status
 # file name: outside_script.sh
@@ -548,7 +548,7 @@ fi
    
 Second script:
 
-```text
+```console
 #!/bin/bash
 # This script acts upon the exit status given by other
 # file name: inner_script.sh
@@ -584,7 +584,7 @@ esac
 
 ### input
 
-```text
+```console
 #!/bin/bash
 # This script will test if you have given a leap year or not.
 # file name input_leap.sh
@@ -602,7 +602,7 @@ else
 fi
 ```
 
-```text
+```console
 #!/bin/bash
 # This is a program that keeps your address book up to date.
 # file name input_address.sh
@@ -641,7 +641,7 @@ fi
 
 ```
 
-```text
+```console
 #!/bin/bash
 # This program convert multi line file to one liner 
 # file name: input_conversion.sh
@@ -675,7 +675,7 @@ echo "###### END ######"
 
 ### chron
 
-```text
+```console
 crontab documentation
 
 # to run a job every month, put * in the Month field.
@@ -710,7 +710,7 @@ $ crontab -l
 $ crontab -r
 ```
 
-```text
+```console
 #!/bin/bash
 # This script creates a subdirectory in the current directory, to which old
 # files are moved.
@@ -742,7 +742,7 @@ done < <(find "$PWD" -type f)
 
 ### function
 
-```text
+```console
 #!/bin/bash
 # This script show how to work with functions
 # file name: function.sh
@@ -768,7 +768,7 @@ LISTA="$(ls)"
 list_length "var_1" "var_2" "var_3" "var_4" "$LISTA"
 ```
 
-```text
+```console
 #!/bin/bash
 # This script count length of files and add user to pick option
 # file name: function_list_pick_file.sh
@@ -807,7 +807,7 @@ done
 
 ### var
 
-```text
+```console
 #!/bin/bash
 # This script show how to work with arraya and strings
 # file name: var.sh
@@ -885,7 +885,7 @@ echo "${WORD//o/?}"
 
 ### redirect
 
-```text
+```console
 # This is ls command will write to /dev/null - This is garbage
 # 2>&1 2- are errors and that will go to standard output and in this case that is /dev/null
 
@@ -903,7 +903,7 @@ echo "${WORD//o/?}"
 
 ### myscripts
 
-```text
+```console
 #!/bin/bash
 # This script converts all file names containing upper case characters into file# names containing only lower cases.
 
@@ -924,7 +924,7 @@ done
 
 ### split
 
-```text
+```console
 #!/bin/bash
 # This script read an file set header split text for 50 lines and create an individual files
 # attributes: file to read from, number of lines to split
@@ -1009,7 +1009,7 @@ echo -e "${CYAN} $FILE_NUM was successfully created! Check in folder new files n
 
 ### terminal
 
-```text
+```console
 #!/bin/bash
 # This function check the current terminal that is in use bxy user
 
@@ -1047,7 +1047,7 @@ which_term
 
 ### color
 
-```text
+```console
 #!/bin/bash
 # This script show how to work with colors in terminal
 
@@ -1077,7 +1077,7 @@ echo "This line will be also green"
 
 [Key Codes](https://gitlab.com/cunidev/gestures/-/wikis/xdotool-list-of-key-codes)
 
-```text
+```console
 #!/bin/bash
 # This script show how to work with xdotool 
 clear
@@ -1112,7 +1112,7 @@ xdotool key ctrl+Page_Up
 
 ### auto
 
-```text
+```console
 #!/bin/bash
 # SCRIPT FOR WORK STARTUP AUTOMATIZATION
 
