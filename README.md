@@ -24,9 +24,15 @@
   - [Chron Job](#chron)
   - [Functions](#function)
   - [Variables](#var)
+  - [Redirect output](#redirect)
   
  - [Some my useful scripts](#myscripts)
- 
+  - [File spliting](#split)
+  - [Terminal check](#terminal)
+  - [Color output](#color)
+  - [xdotool](#xdotool)
+  - [My Automation Work](#auto)
+  - [Clean app build](#clean)
   
 ### intro
 
@@ -877,6 +883,24 @@ echo "${WORD//o/?}"
 
 [TOP](#content)
 
+### redirect
+
+```text
+# This is ls command will write to /dev/null - This is garbage
+# 2>&1 2- are errors and that will go to standard output and in this case that is /dev/null
+
+# ls -la > /dev/null 2>&1
+# Better example
+# ls file.ext > my_std.log 2>my_error.log
+# $?
+
+
+# Read how remove pictures form server chapter 9.3.2
+# http://www.tldp.org/LDP/Bash-Beginners-Guide/html/Bash-Beginners-Guide.html#chap_08
+```
+
+[TOP](#content)
+
 ### myscripts
 
 ```text
@@ -895,6 +919,10 @@ for name in "$LIST"; do
   echo "new name for $ORIG is $NEW"
 done
 ```
+
+[TOP](#content)
+
+### split
 
 ```text
 #!/bin/bash
@@ -977,6 +1005,10 @@ echo -e "${CYAN} $FILE_NUM was successfully created! Check in folder new files n
 
 ```
 
+[TOP](#content) 
+
+### terminal
+
 ```text
 #!/bin/bash
 # This function check the current terminal that is in use bxy user
@@ -1013,3 +1045,250 @@ which_term
 
 [TOP](#content)
 
+### color
+
+```text
+#!/bin/bash
+# This script show how to work with colors in terminal
+
+# Black        0;30     Dark Gray     1;30
+# Red          0;31     Light Red     1;31
+# Green        0;32     Light Green   1;32
+# Brown/Orange 0;33     Yellow        1;33
+# Blue         0;34     Light Blue    1;34
+# Purple       0;35     Light Purple  1;35
+# Cyan         0;36     Light Cyan    1;36
+# Light Gray   0;37     White         1;37
+
+GREEN="\033[0;32m"
+CYAN="\033[0;36m"
+RED="\033[0;31m"
+NC="\033[0m" # No Color
+
+echo -e "${CYAN}This line wiil be in color cyne.${NC} NC make this libne white"
+echo "This line will be also white"
+echo -e "${GREEN}This line will be green"
+echo "This line will be also green"
+```
+
+[TOP](#content)
+
+### xdotool 
+
+[Key Codes](https://gitlab.com/cunidev/gestures/-/wikis/xdotool-list-of-key-codes)
+
+```text
+#!/bin/bash
+# This script show how to work with xdotool 
+clear
+
+# open VS code
+code ./Desktop/
+
+# open Firefox and some sites
+sleep 2
+firefox www.test.com
+
+if ! type xdotool > /dev/null; then
+  echo "Installing xdotool to emulate keyboard commands!"
+  sudo apt-get install xdotool
+else
+  echo "xdotool is already installed. Now you can emulate keyboard commands!"
+fi
+
+# xdotool type setxkbmap de
+# This open new tab
+xdotool key ctrl+shift+t
+# This type in terminal
+xdotool type "google-chrome --disable-web-security --user-data-dir"
+# Press enter
+xdotool key KP_Enter
+echo "Google chrome in secure mode is running!"
+# Go to previous tab
+xdotool key ctrl+Page_Up
+```
+
+[TOP](#content)
+
+### auto
+
+```text
+#!/bin/bash
+# SCRIPT FOR WORK STARTUP AUTOMATIZATION
+
+# Check if app armor is runing
+sudo apparmor_status > /dev/null
+if ! [[ $? -eq 0 ]]; then
+    # Run to start app armor
+    systemctl start apparmor
+
+    if ! [[ $? -eq 0 ]]; then
+        echo "Please activate AppArmor before the start!"
+        exit 1
+    fi
+fi
+clear
+
+# install xdotool
+if ! type xdotool > /dev/null; then
+    echo "Instaling xdotool to emulate keyboard commands!"
+    sudo apt-get install xdotool
+else
+    echo "xdotool is already instaled. Now you can emulate keyboard commands!"
+fi
+
+ACTIV_TERMINAL=$(xdotool getactivewindow)
+
+# CD to Desktop TODO fix relative path here
+cd Desktop/
+
+# List all folders in Desktop (only folders)
+LIST_OF_FOLDERS="$(ls -d */)"
+
+# make an pause and go back one dir
+sleep 1
+cd ..
+
+# Convert to array
+ARRAY_OF_FOLDERS=($LIST_OF_FOLDERS)
+# List all items from array
+# echo " ${ARRAY_OF_FOLDERS[@]}"
+# list specific elelent
+# echo ${ARRAY_OF_FOLDERS[1]}
+
+i=0
+for name in $LIST_OF_FOLDERS; do
+echo "$i. $name"
+((i++))
+done
+
+echo "Please input file number: "
+read FILE_TO_OPEN
+
+if [[ $FILE_TO_OPEN -lt 0 ]] || [[ $FILE_TO_OPEN -gt $i-1 ]]; then
+    echo "Please do not be stupid! Choose a number in the range from 0 to $i"
+    exit 1
+fi
+
+FOLDER_TO_OPEN=${ARRAY_OF_FOLDERS[$FILE_TO_OPEN]}
+DIR_PATH="./Desktop/$FOLDER_TO_OPEN"
+
+# open VS code
+code $DIR_PATH
+echo "Project is open in VS Code!"
+sleep 3
+# open Firefox and some sites
+sleep 3
+firefox some_url
+sleep 3
+firefox some_url
+sleep 3
+firefox some_url
+sleep 3
+
+echo "All sites are open!"
+
+# set focus to terminal to be activ window
+xdotool windowactivate --sync $ACTIV_TERMINAL
+
+# https://gitlab.com/cunidev/gestures/-/wikis/xdotool-list-of-key-codes
+# xdotool type setxkbmap de
+# open new tab in terminal
+xdotool key ctrl+shift+t
+# type in new tab in terminal
+xdotool type "google-chrome --disable-web-security --user-data-dir"
+# Press enter
+xdotool key KP_Enter
+echo "Google chrome in secure mode is running!"
+# go back to previus tab
+xdotool key ctrl+Page_Up
+
+sleep 2
+# set focus to terminal to be activ window
+xdotool windowactivate --sync $ACTIV_TERMINAL
+
+# To open pycharm
+xdotool key ctrl+shift+t
+# type in new tab in terminal
+xdotool type "pycharm-professional $DIR_PATH"
+# Press enter
+xdotool key KP_Enter
+echo "Opening your project in PyCharm!"
+# go back to previus tab
+xdotool key ctrl+Page_Down
+
+sleep 2
+# set focus to terminal to be activ window
+xdotool windowactivate --sync $ACTIV_TERMINAL
+
+# To open pycharm
+xdotool key ctrl+shift+t
+# type in new tab in terminal
+CLIENT="${DIR_PATH}client/"
+xdotool type "cd $CLIENT"
+# Press enter
+xdotool key KP_Enter
+xdotool type "npm start"
+xdotool key KP_Enter
+
+echo "Running Client from project!"
+# go back to previus tab
+xdotool key ctrl+Page_Down
+
+sleep 3
+
+echo "All command are executed. Have a nice working day!"
+```
+
+[TOP](#content)
+
+### clean
+
+SCRIPT FOR CLEAN BUILD APP
+
+```console
+#!/bin/bash
+# Script to fresh install npm packages and cordova platforms
+# call: bash clean.sh [true] # true is optional to invoke cordova platform setup
+
+# Helper function to clean npm module
+clean_npm () {
+    printf "Cleaning npm module and packages... \n"
+    rm -rf node_modules
+    printf "Cleaning cache... \n"
+    npm cache clear --force
+    printf "Installing npm packages... \n"
+    npm install
+}
+
+# helper function to add platforms
+setup_platforms () {
+    printf "Removing cordova platforms... \n"
+    cordova platform rm ios
+    cordova platform rm android
+    sleep 2
+    printf "Adding cordova platforms... \n"
+    cordova platform add ios
+    cordova platform add android
+
+    # printf "Preparing cordova platforms... \n"
+    # cordova prepare ios
+    # cordova prepare android
+}
+
+# first clean cordova file
+cd cordova
+clean_npm
+
+# setup cordova platforms if need
+if [[ "$1" == true ]] ; then
+    setup_platforms
+fi
+
+sleep 2
+cd ..
+clean_npm
+
+npm start
+```
+[TOP](#content)
