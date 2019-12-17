@@ -16,7 +16,12 @@
 - [Bash Scripting](#bash)
   - [Passing variables](#variables)
   - [IF statement](#if)
+  - [CASE statement](#case)
+  - [FOR loop](#for)
+  - [WHILE loop](#while)
   - [Script in script execution](#scripts)
+  - [Ask user for input](#input)
+  - [Chron Job](#chron)
   
 ### intro
 
@@ -425,6 +430,86 @@ fi
 ```
 [TOP](#content)
 
+### case
+
+```text
+#!/bin/bash
+# Basic case statement
+# file name case.sh
+# run: bash case.sh 2 
+
+variable=$1
+
+case $variable in
+                                                                                                
+    [1-2]*)
+        echo "Variable that you pass should start with 1 or 2: $variable"
+    ;; 3)
+    echo "Variable that you pass should be 3: $variable"
+        ;;
+    *)
+        echo "All other variables: $variable"
+    ;;
+    esac
+```
+
+[TOP](#content)
+
+
+### for
+
+```text
+#!/bin/bash
+# Basic for loop
+# file name for.sh
+# run: bash for.sh
+
+# String
+cities="Tokyo London Paris Dubai Mumbai"
+
+for city in $cities; do
+  echo "CITY: $city"
+done
+
+# Array
+FRUITS=('Apple' 'Mango' 'Strawberry' 'Orange' 'Banana')
+
+for item in "${FRUITS[@]}"; do
+  echo "FRUIT: $item"
+done
+
+# Range
+for i in {5..1}; do
+  echo "COUNT: $i"
+done
+
+# Normal loop
+for (( i=0; i<5; i++ )); do  
+  echo "COUNT: $i"
+done
+```
+
+[TOP](#content)
+
+### while
+
+```text
+#!/bin/bash
+# This script just echo test 4 times.
+# file name while.sh
+# run: bash while.sh
+    
+i=0
+while [ $i -lt 4 ]; do
+  echo "Test $i"
+  i=$[$i+1]
+  # or
+  # ((i++))
+done
+```
+
+[TOP](#content)
+
 ### scripts
 
 Frst script:
@@ -483,6 +568,142 @@ case $? in
 esac
 
 ```
+
+[TOP](#content)
+
+### input
+
+```text
+#!/bin/bash
+# This script will test if you have given a leap year or not.
+# file name input_leap.sh
+# run bash input_leap.sh
+
+echo "Type the year that you want to check (4 digits), followed by [ENTER]:"
+
+# This will store user input to variable year
+read year
+
+if (( ("$year" % 400) == "0" )) || (( ("$year" % 4 == "0") && ("$year" % 100 !="0") )); then
+  echo "$year is a leap year."
+else
+  echo "This is not a leap year."
+fi
+```
+
+```text
+#!/bin/bash
+# This is a program that keeps your address book up to date.
+# file name input_address.sh
+# run: bash input_address.sh
+
+FILE=firends.txt
+
+# check if file exists
+if ! [[ -f "$FILE" ]]; then
+    echo "Creating file friends.txt..."
+    touch firends.txt
+fi
+
+echo "Hello, "$USER". This script will register you in some database."
+echo -n "Enter your name and press [ENTER]: "
+read name
+echo
+grep -i "$name" "$FILE"
+
+if [[ $? -eq 0 ]]; then
+  echo "You are already registered, quitting."
+  exit 1
+else
+    echo -n "How old are you? "
+    read age
+    if [[ $age -lt 25 ]]; then
+      echo -n "Which colour of hair do you have? "
+      read colour
+      echo "$name $age $colour" >> "$FILE"
+      echo "You are added to database. Thank you so much!"
+    else
+      echo "You are to old to be in this list."
+      exit 1
+    fi
+fi
+
+```
+
+```text
+#!/bin/bash
+# This program convert multi line file to one liner 
+# file name: input_conversion.sh
+# run bash input_conversion.sh
+
+FILE=firends.txt
+multi_liner="$(cat "$FILE")"
+one_liner="$(tr '\n' ' ' < "$FILE")"
+
+echo "This is file with multi lines:"
+echo "$multi_liner"
+echo "Same file only in one line"
+echo "$one_liner"
+
+echo "---------------------"
+
+for data in $multi_liner; do
+  echo "Separate by space: $data"
+done
+
+echo "---------------------"
+
+for data in $one_liner; do
+  echo "Separate by space: $data"
+done
+
+echo "###### END ######"
+```
+
+[TOP](#content)
+
+### chron
+
+```text
+crontab documentation
+
+# to run a job every month, put * in the Month field.
+# 0 0 1 * * /usr/bin/foo  -> this will execute every first day in month
+
+    * * * * * "command to be executed"
+    - - - - -
+    | | | | |
+    | | | | ----- Day of week (0 - 7) (Sunday=0 or 7)
+    | | | ------- Month (1 - 12)
+    | | --------- Day of month (1 - 31)
+    | ----------- Hour (0 - 23)
+    ------------- Minute (0 - 59)
+```
+```console
+# create an file that will be chron job
+$ touch mycrone
+
+# This will create an cron job to execute every minute (change with 0 0 1 * * to execute every first in month)
+$ echo "* * * * * $(pwd)/test.sh" > mycrone
+
+# create an chron job from specific file
+$ crontab mycrone
+
+# list all chron jobs
+$ crontab -l
+    
+# to remove crontab
+$ crontab -r
+```
+
+[TOP](#content)
+
+
+
+
+
+[TOP](#content)
+
 
 [TOP](#content)
 
