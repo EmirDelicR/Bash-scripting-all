@@ -15,9 +15,8 @@
 
 - [Bash Scripting](#bash)
   - [Passing variables](#variables)
-  
-  
-  - [Create view](#view)
+  - [IF statement](#if)
+  - [Script in script execution](#scripts)
   
 ### intro
 
@@ -272,16 +271,16 @@ Create a simple bash script
 - run with **bash name.sh** or with **./name.sh** (the second one depends on permissions)
 
 ```console
-$ touch test.sh
+$ touch info.sh
 # copy lines below
 # paste is command from part [Copy/Paste](#cp)
-$ paste >> test.sh
+$ paste >> info.sh
 
 # run command
-$ bash test.sh
+$ bash info.sh
 
 # Execute in debug mode
-$ bash -x test.sh
+$ bash -x info.sh
 
 # to execute terminal command in bash script use "$(command)" like "$(ls)"
 ```
@@ -310,6 +309,181 @@ printf "############## That's all folks! ############## \n"
 
 ### variables
 
+```console
+$ touch variables.sh
+# copy lines below
+# paste is command from part [Copy/Paste](#cp)
+$ paste >> variables.sh
 
+# run command
+$ bash variables.sh var_one var_two $USER 
+```
+
+```text
+#!/bin/bash
+# This script reads 3 positional parameters and prints them out.
+
+POSPAR1="$1" # this is what you pass as var_one
+
+echo "Print all $@"
+echo "$POSPAR1 is the first positional parameter, $1."
+echo "$2 is the second positional parameter, $2."
+echo "$3 is the third positional parameter, $3."
+printf "The total number of positional parameters is $#. \n"
+```
 
 [TOP](#content)
+
+### if
+
+IF statement in bash
+
+syntax:
+```console
+if [[ <some test> ]]; then
+  <commands>
+# negation  
+elif ! [[ <some test> ]]; then
+  <commands>
+else
+  <commands>
+fi
+```
+
+some conditions:
+
+```console
+if [[ -a FILE ]] # True if FILE exists.
+if [[ -b FILE ]] # True if FILE exists and is a block-special file.
+if [[ -c FILE ]] # True if FILE exists and is a character-special file.
+if [[ -d FILE ]] # True if FILE exists and is a directory.
+if [[ -e FILE ]] # True if FILE exists.
+if [[ -f FILE ]] # True if FILE exists and is a regular file.
+if [[ -g FILE ]] # True if FILE exists and its SGID bit is set.
+if [[ -h FILE ]] # True if FILE exists and is a symbolic link.
+if [[ -k FILE ]] # True if FILE exists and its sticky bit is set.
+if [[ -p FILE ]] # True if FILE exists and is a named pipe (FIFO).
+if [[ -r FILE ]] # True if FILE exists and is readable.
+if [[ -s FILE ]] # True if FILE exists and has a size greater than zero.
+if [[ -t FD ]] # True if file descriptor FD is open and refers to a terminal.
+if [[ -u FILE ]] # True if FILE exists and its SUID (set user ID) bit is set.
+if [[ -w FILE ]] # True if FILE exists and is writable.
+if [[ -x FILE ]] # True if FILE exists and is executable.
+if [[ -O FILE ]] # True if FILE exists and is owned by the effective user ID.
+if [[ -G FILE ]] # True if FILE exists and is owned by the effective group ID.
+if [[ -L FILE ]] # True if FILE exists and is a symbolic link.
+if [[ -N FILE ]] # True if FILE exists and has been modified since it was last read.
+if [[ -S FILE ]] # True if FILE exists and is a socket.
+if [[ FILE1 -nt FILE2 ]] # True if FILE1 has been changed more recently than FILE2, or if FILE1 exists and FILE2 does not.
+if [[ FILE1 -ot FILE2 ]] # True if FILE1 is older than FILE2, or is FILE2 exists and FILE1 does not.
+if [[ FILE1 -ef FILE2 ]] # True if FILE1 and FILE2 refer to the same device and inode numbers.
+if [[ -o OPTIONNAME ]] # True if shell option "OPTIONNAME" is enabled.
+if [[ -z STRING ]] # True of the length if "STRING" is zero.
+if [[ -n STRING ]] # or if [[ STRING ]] # True if the length of "STRING" is non-zero.
+if [[ STRING1 == STRING2 ]] # True if the strings are equal. "=" may be used instead of "==" for strict POSIX compliance.
+if [[ STRING1 != STRING2 ]] # True if the strings are not equal.
+if [[ STRING1 < STRING2 ]] # True if "STRING1" sorts before "STRING2" lexicographically in the current locale.
+if [[ STRING1 > STRING2 ]] # True if "STRING1" sorts after "STRING2" lexicographically in the current locale.
+if [[ ARG1 OP ARG2 ]] # "OP" is one of -eq, -ne, -lt, -le, -gt or -ge.
+   These arithmetic binary operators return true if "ARG1" is equal to, not equal to, less than, less than or equal to,
+   greater than, or greater than or equal to "ARG2", respectively. "ARG1" and "ARG2" are integers
+```
+
+Example:
+
+```text
+#!/bin/bash
+# Basic if statement
+# run: bash if_basic.sh 101
+
+if [[ $1 -gt 100 ]]; then
+   echo Hey that\'s a large number.
+   pwd
+fi
+
+date
+```
+   
+Example 2:
+
+```text
+#!/bin/bash
+# This script gives information about a file.
+# run: bash if_file_info.sh if_basic.sh
+FILENAME="$1"
+
+echo "Properties for $FILENAME:"
+
+if [[ -f $FILENAME ]]; then
+  echo "Size is $(ls -lh $FILENAME | awk '{ print $5 }')"
+  echo "Type is $(file $FILENAME | cut -d":" -f2 -)"
+  echo "Inode number is $(ls -i $FILENAME | cut -d" " -f1 -)"
+  echo "$(df -h $FILENAME | grep -v Mounted | awk '{ print "On",$1", which is mounted as the", $6,"partition."}')"
+else
+   echo "File does not exist."
+fi
+```
+[TOP](#content)
+
+### scripts
+
+Frst script:
+
+```text
+#!/bin/bash
+# This script returns exit status
+# file name: outside_script.sh
+
+if [[ $data -eq 1 ]]; then
+  echo "You pass option 1"
+  exit 1
+elif [[ $data -eq 2 ]]; then
+  echo "You pass option 2"
+  exit 2
+elif [[ $data -eq 3 ]]; then
+  echo "You pass option 3"
+  exit 3
+else
+  echo "You pass option $data"
+  exit $data  
+fi
+
+```
+   
+Second script:
+
+```text
+#!/bin/bash
+# This script acts upon the exit status given by other
+# file name: inner_script.sh
+# run: bash inner_script.sh 54
+
+# export variable to use in other script
+export data="$1"
+
+# Import other script
+feed="./outside_script.sh"
+
+# Execute other script
+$feed $data
+
+# $? is returned form exit command of first script
+
+case $? in
+
+  [1-2]*)
+    echo "Exit status of other script should be 1 or 2: $?"
+  ;; 
+  3)
+    echo "Exit status of other script should be 3: $?"
+  ;;
+  *)
+    echo "All other exit status: $?"
+  ;;
+esac
+
+```
+
+[TOP](#content)
+
+
