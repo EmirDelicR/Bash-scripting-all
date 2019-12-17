@@ -9,17 +9,23 @@ list_length () {
   echo "$length_result"
 }
 
+isInteger () {
+  test "$1" -ge 0 2>/dev/null
+  [ $? -eq 2 ] && echo -e "Please provide an number of lines not an string '$1'!" && exit 1
+}
+
 LISTA="$(ls)"
 
 OPTIONS="$(list_length "$LISTA")"
 
 select FILENAME in *; do
+  isInteger $REPLY
   if [[ $REPLY -gt $OPTIONS ]]; then
     echo "Do not be an plonker!"
     exit 1
-  elif [[ $REPLY == "E" ]]; then
+  elif [[ $REPLY -eq 0 ]]; then
     echo "By :)"
     exit 1
   fi
-  echo "You picked $FILENAME ($REPLY). To exit input E"
+  echo "You picked $FILENAME ($REPLY). To exit input 0"
 done
