@@ -67,3 +67,8 @@ function git_clean_local_branches {
 # run: glpo 
 # This will force clean up but be careful
 # run: glpo -f 
+
+
+# This is counting lines of code in files
+alias sloc="git ls-files \"*.js*\" \"*.scss\" | xargs wc -l"
+
