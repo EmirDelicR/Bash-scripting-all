@@ -1,5 +1,5 @@
-# take every file and move it to the current folder
-#
+#!/bin/bash
+
 # with in parent folder you want, run flattenSubfolders
 flattenSubfolders () {
     find . -type f -exec mv -n -- {} . \;
